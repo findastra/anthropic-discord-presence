@@ -1,6 +1,6 @@
 # Claude Presence
 
-A free Windows companion that shows **Claude**, an original warm bloom artwork, and an elapsed timer on your Discord profile. It's the sibling of [Astra Presence](https://github.com/findastra/astra-discord-presence) and runs beside it: Astra uses port 38761, Claude uses 38762, and each has its own Discord application, so both activities can show at once.
+A free Windows companion that shows **Claude**, an original warm bloom artwork, and an elapsed timer on your Discord profile. It's the sibling of [Astra Presence](https://github.com/findastra/openai-discord-presence) and runs beside it: Astra uses port 38761, Claude uses 38762, and each has its own Discord application, so both activities can show at once.
 
 ## Use it
 
