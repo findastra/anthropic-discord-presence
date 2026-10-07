@@ -6,7 +6,7 @@ A free Windows companion that shows **Claude**, an original warm bloom artwork, 
 
 1. Install [Node.js 24 or later](https://nodejs.org/en/download) if needed. (The launcher also finds the Node that ships with Codex.)
 2. Double-click **Start Claude Presence.cmd**. Your browser opens the local controls at `http://127.0.0.1:38762/`.
-3. In the [Discord Developer Portal](https://discord.com/developers/applications), create an application named **Claude**. The application name is the title Discord displays.
+3. In the [Discord Developer Portal](https://discord.com/developers/applications), create an application with any name (Discord blocks some brand names). The card's bold title always reads **Anthropic**: the app sends it with each update, in place of the application name.
 4. Under **Rich Presence → Art Assets**, upload `public/claude-bloom.png` named **claude_bloom**. Copy the Application ID from General Information.
 5. In the local app, expand **Connect to Discord**, paste the Application ID, and save.
 6. Keep Discord desktop open with activity sharing on, then choose **Start session** or **Automatic**.

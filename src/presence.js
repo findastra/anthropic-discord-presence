@@ -38,6 +38,8 @@ export function activity(startedAt, image = 'claude_bloom', project = '', model 
   const name = modelLabel(model) || 'Claude';
   return {
     type: 0,
+    // Card title. Discord shows this instead of the registered app name, which can't be a brand name.
+    name: 'Anthropic',
     details: `Using ${name}`,
     state: projectLabel(project) ? `Working on ${projectLabel(project)}` : 'Exploring ideas',
     timestamps: { start: startedAt },

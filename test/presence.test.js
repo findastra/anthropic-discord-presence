@@ -31,7 +31,7 @@ test('recent Claude Code activity window', () => {
 });
 test('payload contains only fixed public fields and elapsed timestamp', () => {
   assert.equal(activity(null), null);
-  assert.deepEqual(activity(17), { type: 0, details: 'Using Claude', state: 'Exploring ideas',
+  assert.deepEqual(activity(17), { type: 0, name: 'Anthropic', details: 'Using Claude', state: 'Exploring ideas',
     timestamps: { start: 17 }, assets: { large_image: 'claude_bloom', large_text: 'Claude' } });
   assert.throws(() => validateConfig({ clientId: 'not-a-token' }));
   assert.throws(() => validateConfig({ clientId: '123456789012345678', image: 'https://example.com/image' }));
