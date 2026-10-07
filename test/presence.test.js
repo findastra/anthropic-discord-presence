@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { mkdtempSync, rmSync, writeFileSync, mkdirSync, utimesSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { Presence, activity, validateConfig, modelLabel, effortLabel } from '../src/presence.js';
+import { GALAXY_URL, Presence, activity, validateConfig, modelLabel, effortLabel } from '../src/presence.js';
 import { detectClaude, isRecent, transcriptModel, folderProject } from '../src/detector.js';
 import { frame, Decoder, DiscordRPC } from '../src/rpc.js';
 import net from 'node:net';
@@ -32,9 +32,9 @@ test('recent Claude Code activity window', () => {
 test('payload contains only fixed public fields and elapsed timestamp', () => {
   assert.equal(activity(null), null);
   assert.deepEqual(activity(17), { type: 0, name: 'Anthropic', details: 'Using Claude', state: 'Exploring ideas',
-    timestamps: { start: 17 }, assets: { large_image: 'claude_bloom', large_text: 'Claude' } });
+    timestamps: { start: 17 }, assets: { large_image: GALAXY_URL, large_text: 'Claude' } });
   assert.throws(() => validateConfig({ clientId: 'not-a-token' }));
-  assert.throws(() => validateConfig({ clientId: '123456789012345678', image: 'https://example.com/image' }));
+  assert.throws(() => validateConfig({ clientId: '123456789012345678', image: 'http://example.com/image' }));
 });
 test('exact model ids become friendly names, and the raw id shows on hover', () => {
   assert.equal(modelLabel('claude-opus-5-5'), 'Claude Opus 5.5');
@@ -139,4 +139,10 @@ test('every recently active Claude Code folder is listed for rotation, newest fi
     const found = await detectClaude({ home: dir, desktop: async () => false });
     assert.deepEqual(found.projects, ['fuzzbois', 'paper-girl']);
   } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+test('card art defaults to the hosted galaxy and accepts asset keys or https links only', () => {
+  assert.equal(validateConfig({ clientId: '123456789012345678' }).image, GALAXY_URL);
+  assert.equal(validateConfig({ clientId: '123456789012345678', image: 'claude_bloom' }).image, 'claude_bloom');
+  assert.throws(() => validateConfig({ clientId: '123456789012345678', image: 'http://insecure.example/x.png' }));
+  assert.throws(() => validateConfig({ clientId: '123456789012345678', image: 'javascript:alert(1)' }));
 });

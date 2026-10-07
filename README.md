@@ -7,7 +7,7 @@ A free Windows companion that shows the exact Anthropic model you’re using (Cl
 1. Install [Node.js 24 or later](https://nodejs.org/en/download) if needed. (The launcher also finds the Node that ships with Codex.)
 2. Double-click **Start Anthropic Presence.cmd**. Your browser opens the local controls at `http://127.0.0.1:38762/`.
 3. In the [Discord Developer Portal](https://discord.com/developers/applications), create an application with any name (Discord blocks some brand names). The card's bold title always reads **Anthropic**: the app sends it with each update, in place of the application name.
-4. Under **Rich Presence → Art Assets**, upload `public/claude-bloom.png` named **claude_bloom**. Copy the Application ID from General Information.
+4. Copy the Application ID from General Information. No art upload is needed: the card loads `public/galaxy.png` from this repo.
 5. In the local app, expand **Connect to Discord**, paste the Application ID, and save.
 6. Keep Discord desktop open with activity sharing on, then choose **Start session** or **Automatic**.
 7. Optional: double-click **Enable Automatic Startup.cmd** once to start it quietly at Windows sign-in.
