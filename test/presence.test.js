@@ -4,7 +4,7 @@ import { mkdtempSync, rmSync, writeFileSync, mkdirSync, utimesSync } from 'node:
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { Presence, activity, validateConfig, modelLabel } from '../src/presence.js';
-import { detectClaude, isRecent, transcriptModel } from '../src/detector.js';
+import { detectClaude, isRecent, transcriptModel, folderProject } from '../src/detector.js';
 import { frame, Decoder, DiscordRPC } from '../src/rpc.js';
 import net from 'node:net';
 import { randomUUID } from 'node:crypto';
@@ -64,7 +64,17 @@ test('detector reads Claude Code transcript times and falls back to the desktop 
     const found = await detectClaude({ home: dir, desktop: never });
     assert.equal(found.model, 'claude-opus-5-5');
     assert.equal(transcriptModel(join(dir, 'missing.jsonl')), '');
+    writeFileSync(file, '{"cwd":"C:\\\\Users\\\\me\\\\Documents\\\\Projects\\\\paper-girl","message":{"model":"claude-opus-5-5"}}\n');
+    assert.equal((await detectClaude({ home: dir, desktop: never })).project, 'paper-girl');
   } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+test('project name is the working folder, never a path, scratch workspace or home folder', () => {
+  const home = 'C:\\Users\\me';
+  assert.equal(folderProject("C:\\Users\\me\\Documents\\ChatGPT\\Mommy's Discord\\Astra-Infinite-Pole", home), 'Astra-Infinite-Pole');
+  assert.equal(folderProject('\\\\?\\C:\\Users\\me\\Documents\\Projects\\paper-girl\\', home), 'paper-girl');
+  assert.equal(folderProject('C:\\Users\\me\\AppData\\Roaming\\Claude\\scratch-workspaces\\a\\b\\scratch-2026-10-07-dfb082', home), '');
+  assert.equal(folderProject('C:\\Users\\me', home), '');
+  assert.equal(folderProject('', home), '');
 });
 test('project sharing is opt-in and project payload is bounded plain text', () => {
   assert.equal(validateConfig({ clientId: '123456789012345678' }).shareProject, false);

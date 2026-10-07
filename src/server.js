@@ -65,7 +65,7 @@ async function sync() {
 }
 
 function currentProject() {
-  return config.shareProject ? (config.projectName || '') : '';
+  return config.shareProject ? (config.projectName || detection.project || '') : '';
 }
 
 function send(res, status, body, type = 'application/json') {

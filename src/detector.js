@@ -2,7 +2,7 @@ import { execFile } from 'node:child_process';
 import { readdirSync, statSync, openSync, fstatSync, readSync, closeSync } from 'node:fs';
 import { join } from 'node:path';
 import { homedir } from 'node:os';
-import { IDLE_MS, modelLabel } from './presence.js';
+import { IDLE_MS, modelLabel, projectLabel } from './presence.js';
 
 // Newest Claude Code transcript as { file, mtimeMs }, or { file: '', mtimeMs: 0 }. Reads file metadata only.
 export function latestClaudeCode(home = process.env.CLAUDE_CONFIG_DIR || join(homedir(), '.claude')) {
@@ -21,18 +21,36 @@ export function latestClaudeCode(home = process.env.CLAUDE_CONFIG_DIR || join(ho
   return latest;
 }
 
-// Exact model id of the latest reply, e.g. 'claude-opus-5-5', or ''. Scans only the last 64 KB of the
-// transcript and keeps only the "model" value; conversation text is discarded, never stored or sent.
-export function transcriptModel(file) {
+// Exact model id of the latest reply (e.g. 'claude-opus-5-5') and the session's working folder.
+// Scans only the last 64 KB of the transcript and keeps only the "model" and "cwd" values;
+// conversation text is discarded, never stored or sent.
+export function transcriptInfo(file) {
   let fd;
   try {
     fd = openSync(file, 'r');
     const size = fstatSync(fd).size;
     const tail = Buffer.alloc(Math.min(size, 64 * 1024));
     readSync(fd, tail, 0, tail.length, size - tail.length);
-    const ids = [...tail.toString('utf8').matchAll(/"model"\s*:\s*"(claude-[\w.\[\]-]{1,60})"/g)];
-    return ids.at(-1)?.[1] ?? '';
-  } catch { return ''; } finally { if (fd !== undefined) closeSync(fd); }
+    const text = tail.toString('utf8');
+    const ids = [...text.matchAll(/"model"\s*:\s*"(claude-[\w.\[\]-]{1,60})"/g)];
+    const dirs = [...text.matchAll(/"cwd"\s*:\s*"((?:[^"\\]|\\.){1,1024})"/g)];
+    let cwd = '';
+    try { cwd = dirs.length ? JSON.parse(`"${dirs.at(-1)[1]}"`) : ''; } catch { /* Malformed line. */ }
+    return { model: ids.at(-1)?.[1] ?? '', cwd };
+  } catch { return { model: '', cwd: '' }; } finally { if (fd !== undefined) closeSync(fd); }
+}
+
+export function transcriptModel(file) {
+  return transcriptInfo(file).model;
+}
+
+// Project name = the folder the session works in (its last path part, never the full path).
+// "No folder" sessions run in the desktop app's scratch workspace and the home folder isn't a project.
+export function folderProject(cwd, home = homedir()) {
+  const path = String(cwd ?? '').replace(/^\\\\\?\\/, '').replace(/[\\/]+$/, '');
+  if (!path || /[\\/]Claude[\\/]scratch-workspaces[\\/]/i.test(path)) return '';
+  if (path.toLowerCase() === home.replace(/[\\/]+$/, '').toLowerCase()) return '';
+  return projectLabel(path.split(/[\\/]/).pop());
 }
 
 export function isRecent(mtimeMs, now = Date.now()) {
@@ -53,13 +71,13 @@ export async function detectClaude({ now = Date.now(), home, desktop = claudeDes
   try {
     const latest = latestClaudeCode(home);
     if (isRecent(latest.mtimeMs, now)) {
-      const model = transcriptModel(latest.file);
-      return { active: true, model, message: `Recent ${modelLabel(model) || 'Claude Code'} activity detected.` };
+      const { model, cwd } = transcriptInfo(latest.file);
+      return { active: true, model, project: folderProject(cwd), message: `Recent ${modelLabel(model) || 'Claude Code'} activity detected.` };
     }
-    // The desktop chat doesn't record its model locally, so this shows plain "Claude".
-    if (await desktop()) return { active: true, model: '', message: 'Claude desktop app is open (model not visible to this app).' };
-    return { active: false, model: '', message: 'Waiting for the Claude app or Claude Code.' };
+    // The desktop chat doesn't record its model or folder locally, so this shows plain "Claude".
+    if (await desktop()) return { active: true, model: '', project: '', message: 'Claude desktop app is open (model not visible to this app).' };
+    return { active: false, model: '', project: '', message: 'Waiting for the Claude app or Claude Code.' };
   } catch {
-    return { active: false, model: '', message: 'Automatic detection unavailable. Manual mode still works.' };
+    return { active: false, model: '', project: '', message: 'Automatic detection unavailable. Manual mode still works.' };
   }
 }

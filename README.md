@@ -16,13 +16,17 @@ A free Windows companion that shows **Claude**, an original warm bloom artwork, 
 
 - **Manual:** timer runs until Stop sharing or Quit app.
 - **Automatic:** shares while the Claude desktop app (`claude.exe`) is running, or while a Claude Code transcript under `~/.claude/projects` was written in the last 5 minutes.
+- **Off:** disconnects immediately.
 
 The card names the exact model, for example **Using Claude Opus 5.5**, and hovering the bloom shows the raw id (`claude-opus-5-5`). The model comes from the newest Claude Code transcript. The desktop chat doesn't record its model locally, so it shows plain **Using Claude**. Switching models keeps the timer running.
-- **Off:** disconnects immediately.
+
+## Project sharing
+
+Turn on **Show my project on Discord** and the card reads **Working on [project]**, where the project is the name of the folder your newest Claude Code session works in (for example `paper-girl`), never the chat title or the full path. Sessions with no folder (the desktop app's scratch workspace) show **Exploring ideas**. A fixed Project name in the settings overrides the folder name.
 
 ## Privacy
 
-Binds to `127.0.0.1` only, checks exact Host/Origin on changes, no telemetry. The Application ID, image key and optional project name live in `.local/config.json` (git-ignored). To find the model, the app scans only the last 64 KB of the newest transcript for its `"model"` value; all other text is discarded, never stored or sent. The Discord payload contains the model name, the start timestamp, the image key and, if you opt in, your project name.
+Binds to `127.0.0.1` only, checks exact Host/Origin on changes, no telemetry. The Application ID, image key and optional project name live in `.local/config.json` (git-ignored). To find the model and project, the app scans only the last 64 KB of the newest transcript for its `"model"` and `"cwd"` values and keeps only the model id and the folder's last name; all other text is discarded, never stored or sent. The Discord payload contains the model name, the start timestamp, the image key and, if you opt in, your project name.
 
 ## Development
 
