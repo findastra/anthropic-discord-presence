@@ -128,3 +128,15 @@ test('real named-pipe mock verifies handshake, ping/pong, activity ACK, and clea
     assert.deepEqual(packets.filter(p => p.cmd === 'SET_ACTIVITY').map(p => p.args.activity), [activity(123), null]);
   } finally { rpc.disconnect(); sockets.forEach(s => s.destroy()); await new Promise(resolve => server.close(resolve)); }
 });
+test('every recently active Claude Code folder is listed for rotation, newest first', async () => {
+  const dir = mkdtempSync(join(tmpdir(), 'claude-rotate-'));
+  try {
+    mkdirSync(join(dir, 'projects', 'a'), { recursive: true }); mkdirSync(join(dir, 'projects', 'b'), { recursive: true });
+    const older = join(dir, 'projects', 'a', 'x.jsonl'), newer = join(dir, 'projects', 'b', 'y.jsonl');
+    writeFileSync(older, '{"cwd":"C:/Users/me/Documents/Projects/paper-girl","message":{"model":"claude-opus-5-5"}}\n');
+    writeFileSync(newer, '{"cwd":"C:/Users/me/Documents/Projects/fuzzbois","message":{"model":"claude-opus-5-5"}}\n');
+    const minuteAgo = new Date(Date.now() - 60_000); utimesSync(older, minuteAgo, minuteAgo);
+    const found = await detectClaude({ home: dir, desktop: async () => false });
+    assert.deepEqual(found.projects, ['fuzzbois', 'paper-girl']);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});

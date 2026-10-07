@@ -54,6 +54,23 @@ export function folderProject(cwd, home = homedir()) {
   return projectLabel(path.split(/[\\/]/).pop());
 }
 
+// Transcripts written in the last few minutes, newest first. Reads file metadata only.
+export function recentClaudeCode(home = process.env.CLAUDE_CONFIG_DIR || join(homedir(), '.claude'), now = Date.now()) {
+  const found = [];
+  try {
+    const projects = join(home, 'projects');
+    for (const dir of readdirSync(projects, { withFileTypes: true })) {
+      if (!dir.isDirectory()) continue;
+      for (const name of readdirSync(join(projects, dir.name))) {
+        if (!name.endsWith('.jsonl')) continue;
+        const file = join(projects, dir.name, name);
+        try { const { mtimeMs } = statSync(file); if (isRecent(mtimeMs, now)) found.push({ file, mtimeMs }); } catch { /* File rotated. */ }
+      }
+    }
+  } catch { /* Claude Code not installed. */ }
+  return found.sort((a, b) => b.mtimeMs - a.mtimeMs);
+}
+
 export function isRecent(mtimeMs, now = Date.now()) {
   const age = now - mtimeMs;
   return mtimeMs > 0 && age >= -5000 && age < IDLE_MS;
@@ -73,7 +90,8 @@ export async function detectClaude({ now = Date.now(), home, desktop = claudeDes
     const latest = latestClaudeCode(home);
     if (isRecent(latest.mtimeMs, now)) {
       const { model, effort, cwd } = transcriptInfo(latest.file);
-      return { active: true, model, effort, project: folderProject(cwd), message: `Recent ${modelLabel(model) || 'Claude Code'} activity detected.` };
+      const projects = [...new Set(recentClaudeCode(home, now).map(f => folderProject(transcriptInfo(f.file).cwd)).filter(Boolean))];
+      return { active: true, model, effort, project: folderProject(cwd), projects, message: `Recent ${modelLabel(model) || 'Claude Code'} activity detected.` };
     }
     // The desktop chat doesn't record its model, effort or folder locally, so this shows plain "Claude".
     if (await desktop()) return { active: true, model: '', effort: '', project: '', message: 'Claude desktop app is open (model not visible to this app).' };
