@@ -3,8 +3,8 @@ import assert from 'node:assert/strict';
 import { mkdtempSync, rmSync, writeFileSync, mkdirSync, utimesSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { Presence, activity, validateConfig } from '../src/presence.js';
-import { detectClaude, isRecent } from '../src/detector.js';
+import { Presence, activity, validateConfig, modelLabel } from '../src/presence.js';
+import { detectClaude, isRecent, transcriptModel } from '../src/detector.js';
 import { frame, Decoder, DiscordRPC } from '../src/rpc.js';
 import net from 'node:net';
 import { randomUUID } from 'node:crypto';
@@ -36,6 +36,18 @@ test('payload contains only fixed public fields and elapsed timestamp', () => {
   assert.throws(() => validateConfig({ clientId: 'not-a-token' }));
   assert.throws(() => validateConfig({ clientId: '123456789012345678', image: 'https://example.com/image' }));
 });
+test('exact model ids become friendly names, and the raw id shows on hover', () => {
+  assert.equal(modelLabel('claude-opus-5-5'), 'Claude Opus 5.5');
+  assert.equal(modelLabel('claude-fable-5-1'), 'Claude Fable 5.1');
+  assert.equal(modelLabel('claude-haiku-4-5-20251001'), 'Claude Haiku 4.5');
+  assert.equal(modelLabel('claude-opus-4-1[1m]'), 'Claude Opus 4.1 (1M)');
+  assert.equal(modelLabel('claude-3-5-sonnet-20241022'), 'Claude 3.5 Sonnet');
+  assert.equal(modelLabel('something-new'), 'something-new');
+  const card = activity(17, 'claude_bloom', '', 'claude-opus-5-5');
+  assert.equal(card.details, 'Using Claude Opus 5.5');
+  assert.equal(card.assets.large_text, 'claude-opus-5-5');
+  assert.equal(card.assets.large_image, 'claude_bloom');
+});
 test('detector reads Claude Code transcript times and falls back to the desktop app', async () => {
   const dir = mkdtempSync(join(tmpdir(), 'claude-detect-'));
   try {
@@ -48,6 +60,10 @@ test('detector reads Claude Code transcript times and falls back to the desktop 
     assert.equal((await detectClaude({ home: dir, desktop: never })).active, false);
     assert.equal((await detectClaude({ home: dir, desktop: async () => true })).active, true);
     assert.equal((await detectClaude({ home: dir, desktop: async () => { throw new Error('x'); } })).active, false);
+    writeFileSync(file, '{"message":{"model":"claude-sonnet-5-5","content":"secret"}}\n{"message":{"model":"<synthetic>"}}\n{"message":{"model":"claude-opus-5-5"}}\n');
+    const found = await detectClaude({ home: dir, desktop: never });
+    assert.equal(found.model, 'claude-opus-5-5');
+    assert.equal(transcriptModel(join(dir, 'missing.jsonl')), '');
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
 test('project sharing is opt-in and project payload is bounded plain text', () => {

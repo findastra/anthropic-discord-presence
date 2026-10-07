@@ -20,14 +20,28 @@ export function projectLabel(value) {
   return String(value ?? '').replace(/[\x00-\x1f\x7f]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 110);
 }
 
-export function activity(startedAt, image = 'claude_bloom', project = '') {
+const cap = word => word.charAt(0).toUpperCase() + word.slice(1);
+
+// Friendly name for an exact model id: 'claude-opus-5-5' → 'Claude Opus 5.5', 'claude-haiku-4-5-20251001' → 'Claude Haiku 4.5'.
+// Unrecognized ids are shown exactly as written. Empty means the model is unknown.
+export function modelLabel(id) {
+  const model = projectLabel(id).slice(0, 64);
+  const named = /^claude-([a-z]+)-(\d+)(?:-(\d{1,2}))?(?:-\d{8})?(\[1m\])?$/i.exec(model);
+  if (named) return `Claude ${cap(named[1])} ${named[2]}${named[3] ? '.' + named[3] : ''}${named[4] ? ' (1M)' : ''}`;
+  const legacy = /^claude-(\d+)(?:-(\d))?-([a-z]+)(?:-\d{8})?$/i.exec(model);
+  if (legacy) return `Claude ${legacy[1]}${legacy[2] ? '.' + legacy[2] : ''} ${cap(legacy[3])}`;
+  return model;
+}
+
+export function activity(startedAt, image = 'claude_bloom', project = '', model = '') {
   if (startedAt === null) return null;
+  const name = modelLabel(model) || 'Claude';
   return {
     type: 0,
-    details: 'Using Claude',
+    details: `Using ${name}`,
     state: projectLabel(project) ? `Working on ${projectLabel(project)}` : 'Exploring ideas',
     timestamps: { start: startedAt },
-    assets: { large_image: image, large_text: 'Claude' },
+    assets: { large_image: image, large_text: projectLabel(model).slice(0, 64) || name },
   };
 }
 

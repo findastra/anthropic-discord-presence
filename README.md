@@ -15,12 +15,14 @@ A free Windows companion that shows **Claude**, an original warm bloom artwork, 
 ## Modes
 
 - **Manual:** timer runs until Stop sharing or Quit app.
-- **Automatic:** shares while the Claude desktop app (`claude.exe`) is running, or while a Claude Code transcript under `~/.claude/projects` was written in the last 5 minutes. Only process names and file timestamps are read, never conversation contents.
+- **Automatic:** shares while the Claude desktop app (`claude.exe`) is running, or while a Claude Code transcript under `~/.claude/projects` was written in the last 5 minutes.
+
+The card names the exact model, for example **Using Claude Opus 5.5**, and hovering the bloom shows the raw id (`claude-opus-5-5`). The model comes from the newest Claude Code transcript. The desktop chat doesn't record its model locally, so it shows plain **Using Claude**. Switching models keeps the timer running.
 - **Off:** disconnects immediately.
 
 ## Privacy
 
-Binds to `127.0.0.1` only, checks exact Host/Origin on changes, no telemetry. The Application ID, image key and optional project name live in `.local/config.json` (git-ignored). The Discord payload contains fixed activity text, the start timestamp, the image key and, if you opt in, your project name.
+Binds to `127.0.0.1` only, checks exact Host/Origin on changes, no telemetry. The Application ID, image key and optional project name live in `.local/config.json` (git-ignored). To find the model, the app scans only the last 64 KB of the newest transcript for its `"model"` value; all other text is discarded, never stored or sent. The Discord payload contains the model name, the start timestamp, the image key and, if you opt in, your project name.
 
 ## Development
 

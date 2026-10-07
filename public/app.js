@@ -44,12 +44,13 @@ async function refresh() {
     }
     $('status').textContent = state.message;
     $('project-preview').textContent = state.project ? `Working on ${state.project}` : 'Exploring ideas';
+    $('model-preview').textContent = `Using ${state.modelLabel}`;
     $('dot').className = state.published ? 'live' : '';
     $('badge').textContent = state.published ? 'SHARING' : state.mode === 'off' ? 'OFF' : 'WAITING';
     $('auto').setAttribute('aria-pressed', String(state.mode === 'auto'));
     $('manual').textContent = state.mode === 'manual' ? 'Session started' : 'Start session';
     $('mode-note').textContent = state.mode === 'auto'
-      ? 'Automatic shows while the Claude app is open or Claude Code was used in the last 5 minutes.'
+      ? 'Automatic shows while the Claude app is open or Claude Code was used in the last 5 minutes. Claude Code sessions name the exact model.'
       : 'Manual sessions stay on until you stop them or quit this app.';
     drawTimer();
   } catch {
