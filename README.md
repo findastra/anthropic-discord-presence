@@ -22,7 +22,7 @@ The card names the exact model, for example **Using Claude Opus 5.5**, and hover
 
 ## Project sharing
 
-Turn on **Show my project on Discord** and the card reads **Working on [project]**, where the project is the name of the folder your newest Claude Code session works in (for example `paper-girl`), never the chat title or the full path. Sessions with no folder (the desktop app's scratch workspace) show **Exploring ideas**. A fixed Project name in the settings overrides the folder name. When several projects are active at once, the card shows each one for 15 seconds in turn.
+Turn on **Show my project on Discord** and the card reads **Working on [project]**, where the project is the name of the folder your newest Claude Code session works in (for example `paper-girl`), never the chat title or the full path. Sessions with no folder (the desktop app's scratch workspace), or whose folder was moved or deleted, show **Exploring ideas** instead of a name that no longer exists. A fixed Project name in the settings overrides the folder name. When several projects are active at once, the card shows each one for 15 seconds in turn.
 
 ## Privacy
 

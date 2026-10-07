@@ -1,5 +1,5 @@
 import { execFile } from 'node:child_process';
-import { readdirSync, statSync, openSync, fstatSync, readSync, closeSync } from 'node:fs';
+import { existsSync, readdirSync, statSync, openSync, fstatSync, readSync, closeSync } from 'node:fs';
 import { join } from 'node:path';
 import { homedir } from 'node:os';
 import { IDLE_MS, modelLabel, projectLabel } from './presence.js';
@@ -54,6 +54,12 @@ export function folderProject(cwd, home = homedir()) {
   return projectLabel(path.split(/[\\/]/).pop());
 }
 
+// The project to show for one session: its folder, but only if that folder still exists (a moved or
+// deleted folder would show a name that no longer exists).
+export function sessionProject(cwd) {
+  return cwd && existsSync(cwd) ? folderProject(cwd) : '';
+}
+
 // Transcripts written in the last few minutes, newest first. Reads file metadata only.
 export function recentClaudeCode(home = process.env.CLAUDE_CONFIG_DIR || join(homedir(), '.claude'), now = Date.now()) {
   const found = [];
@@ -90,8 +96,8 @@ export async function detectClaude({ now = Date.now(), home, desktop = claudeDes
     const latest = latestClaudeCode(home);
     if (isRecent(latest.mtimeMs, now)) {
       const { model, effort, cwd } = transcriptInfo(latest.file);
-      const projects = [...new Set(recentClaudeCode(home, now).map(f => folderProject(transcriptInfo(f.file).cwd)).filter(Boolean))];
-      return { active: true, model, effort, project: folderProject(cwd), projects, message: `Recent ${modelLabel(model) || 'Claude Code'} activity detected.` };
+      const projects = [...new Set(recentClaudeCode(home, now).map(f => sessionProject(transcriptInfo(f.file).cwd)).filter(Boolean))];
+      return { active: true, model, effort, project: sessionProject(cwd), projects, message: `Recent ${modelLabel(model) || 'Claude Code'} activity detected.` };
     }
     // The desktop chat doesn't record its model, effort or folder locally, so this shows plain "Claude".
     if (await desktop()) return { active: true, model: '', effort: '', project: '', message: 'Claude desktop app is open (model not visible to this app).' };

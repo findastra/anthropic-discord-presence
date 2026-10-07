@@ -64,8 +64,13 @@ test('detector reads Claude Code transcript times and falls back to the desktop 
     const found = await detectClaude({ home: dir, desktop: never });
     assert.equal(found.model, 'claude-opus-5-5');
     assert.equal(transcriptModel(join(dir, 'missing.jsonl')), '');
-    writeFileSync(file, '{"cwd":"C:\\\\Users\\\\me\\\\Documents\\\\Projects\\\\paper-girl","message":{"model":"claude-opus-5-5"}}\n');
+    const folder = join(dir, 'paper-girl'); mkdirSync(folder);
+    writeFileSync(file, JSON.stringify({ cwd: folder, message: { model: 'claude-opus-5-5' } }) + '\n');
     assert.equal((await detectClaude({ home: dir, desktop: never })).project, 'paper-girl');
+    // A folder that was moved or deleted must not show its old name.
+    writeFileSync(file, JSON.stringify({ cwd: join(dir, 'claude-discord-presence'), message: { model: 'claude-opus-5-5' } }) + '\n');
+    assert.equal((await detectClaude({ home: dir, desktop: never })).project, '');
+    writeFileSync(file, JSON.stringify({ cwd: folder, message: { model: 'claude-opus-5-5' } }) + '\n');
     assert.equal((await detectClaude({ home: dir, desktop: never })).effort, '');
     writeFileSync(file, '{"effort":"medium","message":{"model":"claude-opus-5-5"}}\n{"effort":"high","perTurnEffort":"high","message":{"model":"claude-opus-5-5"}}\n');
     assert.equal((await detectClaude({ home: dir, desktop: never })).effort, 'high');
@@ -133,8 +138,9 @@ test('every recently active Claude Code folder is listed for rotation, newest fi
   try {
     mkdirSync(join(dir, 'projects', 'a'), { recursive: true }); mkdirSync(join(dir, 'projects', 'b'), { recursive: true });
     const older = join(dir, 'projects', 'a', 'x.jsonl'), newer = join(dir, 'projects', 'b', 'y.jsonl');
-    writeFileSync(older, '{"cwd":"C:/Users/me/Documents/Projects/paper-girl","message":{"model":"claude-opus-5-5"}}\n');
-    writeFileSync(newer, '{"cwd":"C:/Users/me/Documents/Projects/fuzzbois","message":{"model":"claude-opus-5-5"}}\n');
+    mkdirSync(join(dir, 'paper-girl')); mkdirSync(join(dir, 'fuzzbois'));
+    writeFileSync(older, JSON.stringify({ cwd: join(dir, 'paper-girl'), message: { model: 'claude-opus-5-5' } }) + '\n');
+    writeFileSync(newer, JSON.stringify({ cwd: join(dir, 'fuzzbois'), message: { model: 'claude-opus-5-5' } }) + '\n');
     const minuteAgo = new Date(Date.now() - 60_000); utimesSync(older, minuteAgo, minuteAgo);
     const found = await detectClaude({ home: dir, desktop: async () => false });
     assert.deepEqual(found.projects, ['fuzzbois', 'paper-girl']);
