@@ -1,11 +1,11 @@
-# Claude Presence
+# Anthropic Presence
 
-A free Windows companion that shows **Claude**, an original warm bloom artwork, and an elapsed timer on your Discord profile. It's the sibling of [Astra Presence](https://github.com/findastra/openai-discord-presence) and runs beside it: Astra uses port 38761, Claude uses 38762, and each has its own Discord application, so both activities can show at once.
+A free Windows companion that shows the exact Claude model you’re using (Claude Opus 5.5, …), the project folder you’re working in, an original warm bloom artwork, and an elapsed timer on your Discord profile. It's the sibling of [OpenAI Presence](https://github.com/findastra/openai-discord-presence) and runs beside it: OpenAI Presence uses port 38761, Anthropic Presence uses 38762, and each has its own Discord application, so both activities can show at once.
 
 ## Use it
 
 1. Install [Node.js 24 or later](https://nodejs.org/en/download) if needed. (The launcher also finds the Node that ships with Codex.)
-2. Double-click **Start Claude Presence.cmd**. Your browser opens the local controls at `http://127.0.0.1:38762/`.
+2. Double-click **Start Anthropic Presence.cmd**. Your browser opens the local controls at `http://127.0.0.1:38762/`.
 3. In the [Discord Developer Portal](https://discord.com/developers/applications), create an application with any name (Discord blocks some brand names). The card's bold title always reads **Anthropic**: the app sends it with each update, in place of the application name.
 4. Under **Rich Presence → Art Assets**, upload `public/claude-bloom.png` named **claude_bloom**. Copy the Application ID from General Information.
 5. In the local app, expand **Connect to Discord**, paste the Application ID, and save.
@@ -37,4 +37,4 @@ node src/server.js
 
 ## Credits
 
-Built by Astra from the MIT-licensed Astra Presence. The bloom artwork is original. This independent companion isn't affiliated with Anthropic; "Claude" is Anthropic's trademark.
+Built by Astra from the MIT-licensed OpenAI Presence. The bloom artwork is original. This independent companion isn't affiliated with Anthropic; "Claude" is Anthropic's trademark.

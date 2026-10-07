@@ -7,10 +7,12 @@ function target() {
   return join(process.env.APPDATA, 'Microsoft', 'Windows', 'Start Menu', 'Programs', 'Startup');
 }
 export function startupEnabled() {
-  try { return existsSync(join(target(), 'Claude Presence.vbs')); } catch { return false; }
+  try { return existsSync(join(target(), 'Anthropic Presence.vbs')); } catch { return false; }
 }
 export function setStartup(enabled) {
-  const dir = target(); const path = join(dir, 'Claude Presence.vbs');
+  const dir = target(); const path = join(dir, 'Anthropic Presence.vbs');
+  // Remove the launcher from before the rename so the app never starts twice.
+  try { unlinkSync(join(dir, 'Claude Presence.vbs')); } catch (error) { if (error.code !== 'ENOENT') throw error; }
   if (!enabled) {
     try { unlinkSync(path); } catch (error) { if (error.code !== 'ENOENT') throw error; }
     return;
