@@ -1,6 +1,6 @@
 # Anthropic Presence
 
-A free Windows companion that shows the exact Claude model you’re using (Claude Opus 5.5, …), the project folder you’re working in, an original warm bloom artwork, and an elapsed timer on your Discord profile. It's the sibling of [OpenAI Presence](https://github.com/findastra/openai-discord-presence) and runs beside it: OpenAI Presence uses port 38761, Anthropic Presence uses 38762, and each has its own Discord application, so both activities can show at once.
+A free Windows companion that shows the exact Anthropic model you’re using (Claude Opus 5.5, Claude Fable 5.1, …), the project folder you’re working in, an original warm bloom artwork, and an elapsed timer on your Discord profile. It's the sibling of [OpenAI Presence](https://github.com/findastra/openai-discord-presence) and runs beside it: OpenAI Presence uses port 38761, Anthropic Presence uses 38762, and each has its own Discord application, so both activities can show at once.
 
 ## Use it
 
