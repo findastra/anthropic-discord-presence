@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { mkdtempSync, rmSync, writeFileSync, mkdirSync, utimesSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { Presence, activity, validateConfig, modelLabel } from '../src/presence.js';
+import { Presence, activity, validateConfig, modelLabel, effortLabel } from '../src/presence.js';
 import { detectClaude, isRecent, transcriptModel, folderProject } from '../src/detector.js';
 import { frame, Decoder, DiscordRPC } from '../src/rpc.js';
 import net from 'node:net';
@@ -66,7 +66,19 @@ test('detector reads Claude Code transcript times and falls back to the desktop 
     assert.equal(transcriptModel(join(dir, 'missing.jsonl')), '');
     writeFileSync(file, '{"cwd":"C:\\\\Users\\\\me\\\\Documents\\\\Projects\\\\paper-girl","message":{"model":"claude-opus-5-5"}}\n');
     assert.equal((await detectClaude({ home: dir, desktop: never })).project, 'paper-girl');
+    assert.equal((await detectClaude({ home: dir, desktop: never })).effort, '');
+    writeFileSync(file, '{"effort":"medium","message":{"model":"claude-opus-5-5"}}\n{"effort":"high","perTurnEffort":"high","message":{"model":"claude-opus-5-5"}}\n');
+    assert.equal((await detectClaude({ home: dir, desktop: never })).effort, 'high');
   } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+test('the card names the effort level next to a known model', () => {
+  assert.equal(activity(17, 'claude_bloom', '', 'claude-opus-5-5', 'high').details, 'Using Claude Opus 5.5 on High');
+  assert.equal(activity(17, 'claude_bloom', '', 'claude-opus-5-5', 'xhigh').details, 'Using Claude Opus 5.5 on Extra High');
+  assert.equal(activity(17, 'claude_bloom', '', 'claude-opus-5-5', '').details, 'Using Claude Opus 5.5');
+  assert.equal(activity(17, 'claude_bloom', '', '', 'high').details, 'Using Claude');
+  assert.equal(effortLabel('max'), 'Max');
+  assert.equal(effortLabel('turbo'), 'Turbo');
+  assert.equal(effortLabel('<b>high</b>'), '');
 });
 test('project name is the working folder, never a path, scratch workspace or home folder', () => {
   const home = 'C:\\Users\\me';

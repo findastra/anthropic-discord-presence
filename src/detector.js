@@ -21,9 +21,9 @@ export function latestClaudeCode(home = process.env.CLAUDE_CONFIG_DIR || join(ho
   return latest;
 }
 
-// Exact model id of the latest reply (e.g. 'claude-opus-5-5') and the session's working folder.
-// Scans only the last 64 KB of the transcript and keeps only the "model" and "cwd" values;
-// conversation text is discarded, never stored or sent.
+// Exact model id of the latest reply (e.g. 'claude-opus-5-5'), its effort level (e.g. 'high') and the
+// session's working folder. Scans only the last 64 KB of the transcript and keeps only the "model",
+// "effort" and "cwd" values; conversation text is discarded, never stored or sent.
 export function transcriptInfo(file) {
   let fd;
   try {
@@ -33,11 +33,12 @@ export function transcriptInfo(file) {
     readSync(fd, tail, 0, tail.length, size - tail.length);
     const text = tail.toString('utf8');
     const ids = [...text.matchAll(/"model"\s*:\s*"(claude-[\w.\[\]-]{1,60})"/g)];
+    const efforts = [...text.matchAll(/"effort"\s*:\s*"([a-z-]{1,20})"/g)];
     const dirs = [...text.matchAll(/"cwd"\s*:\s*"((?:[^"\\]|\\.){1,1024})"/g)];
     let cwd = '';
     try { cwd = dirs.length ? JSON.parse(`"${dirs.at(-1)[1]}"`) : ''; } catch { /* Malformed line. */ }
-    return { model: ids.at(-1)?.[1] ?? '', cwd };
-  } catch { return { model: '', cwd: '' }; } finally { if (fd !== undefined) closeSync(fd); }
+    return { model: ids.at(-1)?.[1] ?? '', effort: efforts.at(-1)?.[1] ?? '', cwd };
+  } catch { return { model: '', effort: '', cwd: '' }; } finally { if (fd !== undefined) closeSync(fd); }
 }
 
 export function transcriptModel(file) {
@@ -71,13 +72,13 @@ export async function detectClaude({ now = Date.now(), home, desktop = claudeDes
   try {
     const latest = latestClaudeCode(home);
     if (isRecent(latest.mtimeMs, now)) {
-      const { model, cwd } = transcriptInfo(latest.file);
-      return { active: true, model, project: folderProject(cwd), message: `Recent ${modelLabel(model) || 'Claude Code'} activity detected.` };
+      const { model, effort, cwd } = transcriptInfo(latest.file);
+      return { active: true, model, effort, project: folderProject(cwd), message: `Recent ${modelLabel(model) || 'Claude Code'} activity detected.` };
     }
-    // The desktop chat doesn't record its model or folder locally, so this shows plain "Claude".
-    if (await desktop()) return { active: true, model: '', project: '', message: 'Claude desktop app is open (model not visible to this app).' };
-    return { active: false, model: '', project: '', message: 'Waiting for the Claude app or Claude Code.' };
+    // The desktop chat doesn't record its model, effort or folder locally, so this shows plain "Claude".
+    if (await desktop()) return { active: true, model: '', effort: '', project: '', message: 'Claude desktop app is open (model not visible to this app).' };
+    return { active: false, model: '', effort: '', project: '', message: 'Waiting for the Claude app or Claude Code.' };
   } catch {
-    return { active: false, model: '', project: '', message: 'Automatic detection unavailable. Manual mode still works.' };
+    return { active: false, model: '', effort: '', project: '', message: 'Automatic detection unavailable. Manual mode still works.' };
   }
 }
