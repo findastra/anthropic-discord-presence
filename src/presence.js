@@ -43,8 +43,11 @@ export function effortLabel(id) {
 }
 
 // Card art: loaded by Discord straight from the public repo, so nobody has to upload it in the Developer Portal.
-// Bump ?v= whenever galaxy.png changes so Discord fetches the new image instead of a cached one.
-export const GALAXY_URL = 'https://raw.githubusercontent.com/findastra/anthropic-discord-presence/main/public/galaxy.png?v=4';
+// Bump ?v= whenever the card art changes so Discord fetches the new image instead of a cached one.
+// The project's own Discord application. Application IDs are public, so friends can use it without any setup.
+export const BUILT_IN_CLIENT_ID = '1555096326734094356';
+
+export const GALAXY_URL = 'https://raw.githubusercontent.com/findastra/anthropic-discord-presence/main/public/galaxy-card.gif?v=5';
 
 export function activity(startedAt, image = GALAXY_URL, project = '', model = '', effort = '') {
   if (startedAt === null) return null;

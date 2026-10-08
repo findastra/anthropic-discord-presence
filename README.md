@@ -1,12 +1,26 @@
 # Anthropic Presence
 
+![Swirling galaxy](public/galaxy.gif)
+
+## Download (for friends)
+
+**[⬇ Download Anthropic Presence for Windows](https://github.com/findastra/anthropic-discord-presence/archive/refs/heads/main.zip)**
+
+1. Install [Node.js 24 or later](https://nodejs.org/en/download) if you don't have it.
+2. Unzip the download anywhere you like.
+3. Double-click **Start Anthropic Presence.cmd**. Your browser opens the controls.
+4. Click **Automatic**. It shares while you use Claude Code and the Claude desktop app. Keep Discord desktop open.
+5. Optional: double-click **Enable Automatic Startup.cmd** once so it starts with Windows.
+
+No Discord setup needed: the app comes with its own Discord application built in.
+
 A free Windows companion that shows the exact Anthropic model you’re using (Claude Opus 5.5, Claude Fable 5.1, …), the project folder you’re working in, an original warm bloom artwork, and an elapsed timer on your Discord profile. It's the sibling of [OpenAI Presence](https://github.com/findastra/openai-discord-presence) and runs beside it: OpenAI Presence uses port 38761, Anthropic Presence uses 38762, and each has its own Discord application, so both activities can show at once.
 
 ## Use it
 
 1. Install [Node.js 24 or later](https://nodejs.org/en/download) if needed. (The launcher also finds the Node that ships with Codex.)
 2. Double-click **Start Anthropic Presence.cmd**. Your browser opens the local controls at `http://127.0.0.1:38762/`.
-3. In the [Discord Developer Portal](https://discord.com/developers/applications), create an application with any name (Discord blocks some brand names). The card's bold title always reads **Anthropic**: the app sends it with each update, in place of the application name.
+3. In the [Discord Developer Portal](https://discord.com/developers/applications), optional: only if you want your own Discord application instead of the built-in one, create an application with any name (Discord blocks some brand names). The card's bold title always reads **Anthropic**: the app sends it with each update, in place of the application name.
 4. Copy the Application ID from General Information. No art upload is needed: the card loads `public/galaxy.png` from this repo.
 5. In the local app, expand **Connect to Discord**, paste the Application ID, and save.
 6. Keep Discord desktop open with activity sharing on, then choose **Start session** or **Automatic**.
