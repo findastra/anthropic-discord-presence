@@ -26,14 +26,19 @@ A small program on your PC. Its page opens in your browser and shows a live prev
 What every button does, and the quirks:
 [ai-discord-presence, Buttons & Instructions](https://github.com/findastra/ai-discord-presence#buttons--instructions).
 
-## Source Code
+## Developer Notes
 
-The app is built and kept in
-[findastra/ai-discord-presence](https://github.com/findastra/ai-discord-presence/tree/main/anthropic-discord-presence),
-together with OpenAI Discord Presence. Report problems and send changes there.
+1. **Where the code is:** the app is built and kept in
+   [findastra/ai-discord-presence](https://github.com/findastra/ai-discord-presence/tree/main/anthropic-discord-presence),
+   together with OpenAI Discord Presence. Report problems and send changes there.
+2. **The first version** (Anthropic Presence, until 2026-10-17) is in this repo's history. If you still run it, choose
+   **Quit app** in its control panel before starting the new one.
 
-<sub>The first version (Anthropic Presence, until 2026-10-17) is in this repo's history. If you still run it, choose
-**Quit app** in its control panel before starting the new one.</sub>
+## Credits
+
+1. Built with Claude Opus 5.5, from 2026-10-06, together with the galaxy art and this page.
+2. Full list: the "Built with" lines in
+   [ai-discord-presence's AGENTS.md](https://github.com/findastra/ai-discord-presence/blob/main/AGENTS.md).
 
 ## License
 
