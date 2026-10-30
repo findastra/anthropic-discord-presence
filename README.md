@@ -2,7 +2,7 @@
 
 *By Astra.* Show your Claude Code model on your Discord profile. A free Windows app.
 
-<p align="center"><img src="public/anthropic-card-20261029.gif" alt="Anthropic Discord Presence card: Using Claude Opus 5.5 on Max, Working on Astra's Infinite Pole, timer running" width="648"></p>
+<p align="center"><img src="public/anthropic-card-20261030.gif" alt="Anthropic Discord Presence card: Using Claude Opus 5.5 on Max, Working on Astra's Infinite Pole, timer running" width="648"></p>
 
 <p align="center"><b><a href="https://github.com/findastra/ai-discord-presence/raw/main/downloads/anthropic-discord-presence.zip">⬇ Download for Windows</a></b></p>
 
@@ -13,7 +13,7 @@ sharing on.
 
 A small program on your PC. Its page opens in your browser and shows a live preview of your card.
 
-<img src="public/anthropic-app-20261029.png" alt="Anthropic Discord Presence's page: the galaxy, the Start, Stop, Automatic, Hide Chat Topic and Quit buttons, and the card" width="100%">
+<img src="public/anthropic-app-20261030.png" alt="Anthropic Discord Presence's page: the galaxy, the Start, Stop, Automatic, Hide Chat Topic and Quit buttons, and the card" width="100%">
 
 ## Getting Started
 
@@ -33,6 +33,11 @@ What every button does, and the quirks:
    together with OpenAI Discord Presence. Report problems and send changes there.
 2. **The first version** (Anthropic Presence, until 2026-10-17) is in this repo's history. If you still run it, choose
    **Quit app** in its control panel before starting the new one.
+
+## Official Artwork
+
+The official gold five-arm galaxy uses individually moving stars, a white center and black outer edges.
+Approved by Astra on October 30, 2026. [Artwork and animation source](https://github.com/findastra/ai-discord-presence/blob/main/docs/official-galaxy-artwork-20261030.md).
 
 ## Credits
 
